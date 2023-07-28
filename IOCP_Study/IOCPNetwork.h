@@ -5,7 +5,6 @@
 #include <WS2tcpip.h>
 #include <thread>
 #include <vector>
-#include "Define.h"
 #include "IServer.h"
 #include "ClientSession.h"
 
@@ -33,9 +32,8 @@ public:
 	// 서버 종료
 	void StopServer();
 
-	// 콘솔출력
-	void ErrorHandling(const char* message, int64_t errorCode = -1);
-	void PrintMessage(const char* message);
+	// 클라이언트 세션 가져오기
+	ClientSession* GetClientSession(const uint32_t client_index);
 
 private:
 	// 서버 종류에 따른 참조
@@ -44,8 +42,8 @@ private:
 	// 서버 리슨 소켓
 	SOCKET listen_socket_ = INVALID_SOCKET; 
 
-	// 클라이언트 정보 구조체 벡터
-	std::vector<ClientSession> client_infos_;
+	// 클라이언트 세션 풀
+	std::vector<ClientSession> client_sessions_;
 
 	// 최대 클라이언트 수
 	const uint32_t max_client_count_ = 100;
@@ -80,23 +78,11 @@ private:
 	// accepter 쓰레드 생성
 	void CreateAccepterThread();
 
-	// 클라이언트 소켓 IOCP 바인드
-	bool BindClientToIOCP(ClientInfo* client_info);
-
-	// Recv
-	bool RecvRequest(ClientInfo* client_info);
-
-	// Send
-	bool SendRequest(ClientInfo* client_info, char* msg, DWORD bytes_length);
-
 	// worker 쓰레드
 	void WorkerThread();
 
 	// accepter 쓰레드
 	void AccepterThread();
-
-	// 클라이언트 연결 종료
-	void CloseSocket(ClientInfo* client_info, bool isForce = false);
 
 	// 사용하지 않는 클라이언트 반환
 	ClientSession* GetEmptyClientInfo();

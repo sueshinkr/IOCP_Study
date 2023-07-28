@@ -4,9 +4,7 @@ ClientSession::ClientSession()
 {
 	client_socket_ = INVALID_SOCKET;
 	ZeroMemory(&recv_overlapped_ex_, sizeof(recv_overlapped_ex_));
-	ZeroMemory(&send_overlapped_ex_, sizeof(send_overlapped_ex_));
 	ZeroMemory(recv_buf_, sizeof(recv_buf_));
-	ZeroMemory(send_buf_, sizeof(send_buf_));
 }
 
 // 클라이언트 초기화
@@ -81,23 +79,24 @@ bool ClientSession::RecvRequest()
 }
 
 // SEND 요청
-bool ClientSession::SendRequest(char* msg, DWORD bytes_length)
+bool ClientSession::SendRequest(char* data, DWORD data_size)
 {
 	DWORD dw_flags = 0;
 	DWORD dw_number_of_byte_sent = 0;
 
 	// OverlappedEx 구조체 세팅
-	CopyMemory(send_buf_, msg, bytes_length);
+	OverlappedEx* send_overlapped_ex = new OverlappedEx();
 
-	send_overlapped_ex_.wsa_buf.len = bytes_length;
-	send_overlapped_ex_.wsa_buf.buf = send_buf_;
-	send_overlapped_ex_.operation = IOOperation::SEND;
+	send_overlapped_ex->wsa_buf.len = data_size;
+	send_overlapped_ex->wsa_buf.buf = new char[data_size];
+	CopyMemory(send_overlapped_ex->wsa_buf.buf, data, data_size);
+	send_overlapped_ex->operation = IOOperation::SEND;
 
 	if (WSASend(client_socket_,
-		&(send_overlapped_ex_.wsa_buf),
+		&(send_overlapped_ex->wsa_buf),
 		1,
 		&dw_number_of_byte_sent, dw_flags,
-		(LPWSAOVERLAPPED) & (send_overlapped_ex_),
+		(LPWSAOVERLAPPED) & (send_overlapped_ex),
 		NULL) == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING) {
 		ErrorHandling("WSASend() Error!", WSAGetLastError());
 		return false;

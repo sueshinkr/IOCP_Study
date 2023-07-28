@@ -1,20 +1,25 @@
 #pragma once
 #include <cstdint>
 #include <deque>
+#include <mutex>
+#include <iostream>
 
-class PacketData
+#include "Define.h"
+
+class PacketManager
 {
 public:
-	PacketData(const uint32_t client_index, const uint32_t data_size, char* data);
+	PacketManager() {}
 
-	void SetPacketData(const uint32_t client_index, const uint32_t data_size, char* data);
+	~PacketManager() {}
+
+	void EnqueueRequestPacket(const uint32_t client_index, const uint32_t data_size, char* data);
+	RequestPacket DequeueRequestPacket();
 
 private:
-	//패킷 데이터
-	uint32_t client_index_;
-	uint32_t data_size_;
-	char* data_;
-	
 	// 패킷 큐
-	std::deque<PacketData> packet_queue_;
+	std::deque<RequestPacket> packet_queue_;
+
+	// mutex
+	std::mutex packet_queue_mutex_;
 };

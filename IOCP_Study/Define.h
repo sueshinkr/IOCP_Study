@@ -46,3 +46,34 @@ struct ClientInfo
 		ZeroMemory(send_buf, sizeof(send_buf));
 	}
 };
+
+// 패킷 구조체
+struct RequestPacket
+{
+	//패킷 데이터
+	uint32_t client_index_ = 0;
+	uint32_t data_size_ = 0;
+	char* data_ = nullptr;
+	
+	RequestPacket() {}
+
+	RequestPacket(const uint32_t client_index, const uint32_t data_size, char* data)
+	{
+		Set(client_index, data_size, data);
+	}
+	
+	void Set(RequestPacket& packet)
+	{
+		Set(packet.client_index_, packet.data_size_, packet.data_);
+
+		delete packet.data_;
+	}
+
+	void Set(const uint32_t client_index, const uint32_t data_size, char* data)
+	{
+		client_index_ = client_index;
+		data_size_ = data_size;
+		data_ = new char[data_size_];
+		CopyMemory(data_, data, data_size_);
+	}
+};

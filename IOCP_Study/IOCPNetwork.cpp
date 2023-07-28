@@ -61,8 +61,12 @@ void IOCPNetwork::StartServer()
 
 void IOCPNetwork::CreateClient()
 {
+	client_sessions_.reserve(max_client_count_);
+
 	for (uint32_t i = 0; i < max_client_count_; i++) {
-		client_infos_.emplace_back();
+		client_sessions_.emplace_back();
+	
+		client_sessions_[i].SetIndex(i);
 	}
 }
 
@@ -88,7 +92,6 @@ void IOCPNetwork::CreateAccepterThread()
 	if (accepter_thread_.joinable() == false) {
 		ErrorHandling("CreateAccepterThread() Error!");
 	}
-
 }
 
 void IOCPNetwork::WorkerThread()
@@ -115,6 +118,8 @@ void IOCPNetwork::WorkerThread()
 				if (dw_number_of_bytes_transferred == 0) {
 					PrintMessage("Client Disconnected!");
 					client_info->DisconnectClient();
+
+					client_count_--;
 					continue;
 				}
 			}
@@ -131,8 +136,11 @@ void IOCPNetwork::WorkerThread()
 			if (dw_number_of_bytes_transferred == 0) {
 				PrintMessage("Client Disconnected!");
 				client_info->DisconnectClient();
+
 				// 연결 종료 알림
 				server_.OnDisconnect(client_info->GetIndex());
+				client_count_--;
+
 				continue;
 			}
 		}
@@ -143,12 +151,11 @@ void IOCPNetwork::WorkerThread()
 
 		if (overlapped_ex->operation == IOOperation::RECV) {
 			server_.OnReceive(client_info->GetIndex(), dw_number_of_bytes_transferred, client_info->GetRecvBuf());
-
-			// 일단 에코
-			SendRequest(client_info, client_info->recv_buf, dw_number_of_bytes_transferred);
 		}
 		else if (overlapped_ex->operation == IOOperation::SEND) {
-			PrintMessage("Send Complete!");
+			delete[] overlapped_ex->wsa_buf.buf;
+			delete overlapped_ex;
+			server_.OnSend(client_info->GetIndex(), dw_number_of_bytes_transferred);
 		}
 		else {
 			// 예외 처리
@@ -187,17 +194,6 @@ void IOCPNetwork::AccepterThread()
 	}
 }
 
-bool IOCPNetwork::BindClientToIOCP(ClientInfo* client_info)
-{
-	HANDLE iocp_result = CreateIoCompletionPort((HANDLE)client_info->client_socket, iocp_handle_, (ULONG_PTR)client_info, 0);
-	if (iocp_result == NULL || iocp_result != iocp_handle_) {
-		ErrorHandling("CreateIOCPNetwork() Error!", GetLastError());
-		return false;
-	}
-
-	return true;
-}
-
 void IOCPNetwork::StopServer()
 {
 	is_worker_run_ = false;
@@ -223,7 +219,7 @@ void IOCPNetwork::StopServer()
 ClientSession* IOCPNetwork::GetEmptyClientInfo()
 {
 	// 사용하지 않는 클라이언트 반환
-	for (auto& client_info : client_infos_)
+	for (auto& client_info : client_sessions_)
 	{
 		if (client_info.GetSocket() == INVALID_SOCKET) {
 			return &client_info;
@@ -233,19 +229,7 @@ ClientSession* IOCPNetwork::GetEmptyClientInfo()
 	return nullptr;
 }
 
-
-void IOCPNetwork::ErrorHandling(const char* message, int64_t errorCode)
+ClientSession* IOCPNetwork::GetClientSession(const uint32_t client_index)
 {
-	std::cout << message << std::endl;
-
-	if (errorCode != -1) {
-		std::cout << "ErrorCode : " << errorCode << std::endl;
-	}
-
-	exit(1);
-}
-
-void IOCPNetwork::PrintMessage(const char* message)
-{
-	std::cout << message << std::endl;
+	return &client_sessions_[client_index];
 }
