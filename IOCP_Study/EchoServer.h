@@ -26,14 +26,16 @@ public:
 private:
 	std::unique_ptr<IOCPNetwork> iocp_network_;
 
-	// 패킷 큐
-	std::deque<PacketData> packet_queue_;
-
+	PacketData packet_data_;
 	// mutex
-	std::mutex packet_queue_mutex_;
+	std::mutex packet_data_mutex_;
 
 	// 패킷 처리 쓰레드
+	std::thread packet_thread_;
 
-	// 패킷 큐 확인
+	void PacketThread();
+
+	// 패킷 큐에서 데이터 꺼내오기
+	
 };
 

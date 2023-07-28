@@ -19,6 +19,11 @@ void EchoServer::OnReceive(const uint32_t client_index, const uint32_t data_size
 	// 여러 쓰레드에서 동시에 진행할 수 있으니 락 필요
 	PacketData packet_data(client_index, data_size, data);
 
-	std::lock_guard<std::mutex> lock(packet_queue_mutex_);
-	packet_queue_.emplace_back(packet_data);
+	std::lock_guard<std::mutex> lock(packet_data_mutex_);
+	packet_data_.SetPacketData(packet_data);
+}
+
+void EchoServer::PacketThread()
+{
+
 }
