@@ -109,8 +109,10 @@ void IOCPNetwork::WorkerThread()
 	{
 		// I/O 작업 대기
 		if (GetQueuedCompletionStatus(iocp_handle_, &dw_number_of_bytes_transferred, (PULONG_PTR)client_info, &lp_overlapped, INFINITE) == false) {
-			// I/O 작업 완료가 감지되지 않음
+			// Completion Port 닫힘
 			if (lp_overlapped == NULL) {
+				// GetLastError() == ERROR_ABANDONED_WAIT_0
+				// 에러처리?
 				continue;
 			}
 			else {
