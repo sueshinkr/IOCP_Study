@@ -3,7 +3,7 @@
 #include "EchoServer.h"
 
 // 서버 포트 및 최대 접속 클라이언트 수
-const uint16_t SERVER_PORT = 12345;
+const uint16_t SERVER_PORT = 11021;
 const uint16_t MAX_CLIENT = 100;
 
 int main()
@@ -41,3 +41,10 @@ int main()
 // send버퍼 동적할당
 // 클라이언트 관련 로직 분리
 
+
+// 5, 6단계
+// 1-send 구현 - 큐 형태로
+
+
+// 7단계
+// Accept 비동기화

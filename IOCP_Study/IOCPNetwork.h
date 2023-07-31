@@ -46,7 +46,7 @@ private:
 	std::vector<ClientSession> client_sessions_;
 
 	// 최대 클라이언트 수
-	const uint32_t max_client_count_ = 100;
+	const uint32_t max_client_count_ = 5;
 
 	// 접속중인 클라이언트 수
 	int32_t client_count_ = 0;
@@ -83,8 +83,5 @@ private:
 
 	// accepter 쓰레드
 	void AccepterThread();
-
-	// 사용하지 않는 클라이언트 반환
-	ClientSession* GetEmptyClientInfo();
 };
 

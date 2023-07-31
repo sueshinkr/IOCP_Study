@@ -20,6 +20,6 @@ private:
 	// 패킷 큐
 	std::deque<RequestPacket> packet_queue_;
 
-	// mutex
+	// 패킷 큐 mutex
 	std::mutex packet_queue_mutex_;
 };

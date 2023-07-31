@@ -42,15 +42,15 @@ return;
 
 void IOCPNetwork::StartServer()
 {
-	// 클라이언트 생성
-	CreateClient();
-
 	// Completion Port 생성
 	// ExistingCompletionPort==null인 경우 NumberOfConcurrentThreads는 무시됨?
 	iocp_handle_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0);
 	if (iocp_handle_ == NULL) {
 		ErrorHandling("CreateIOCPNetwork() Error!", GetLastError());
 	}
+
+	// 클라이언트 생성
+	CreateClient();
 
 	// worker 쓰레드 생성
 	CreateWorkerThread();
@@ -64,9 +64,11 @@ void IOCPNetwork::CreateClient()
 	client_sessions_.reserve(max_client_count_);
 
 	for (uint32_t i = 0; i < max_client_count_; i++) {
-		client_sessions_.emplace_back();
-	
+		client_sessions_.emplace_back(i);
 		client_sessions_[i].SetIndex(i);
+
+		// 소켓 미리 생성 후 iocp에 등록
+		client_sessions_[i].InitSocket(iocp_handle_);
 	}
 }
 
@@ -97,7 +99,7 @@ void IOCPNetwork::CreateAccepterThread()
 void IOCPNetwork::WorkerThread()
 {
 	// CompletionKey를 받는 변수
-	ClientSession* client_info = nullptr;
+	ClientSession* client_session = nullptr;
 
 	// I/O 작업으로 전송된 데이터 크기를 받는 변수
 	DWORD dw_number_of_bytes_transferred = 0;
@@ -108,7 +110,7 @@ void IOCPNetwork::WorkerThread()
 	while (is_worker_run_)
 	{
 		// I/O 작업 대기
-		if (GetQueuedCompletionStatus(iocp_handle_, &dw_number_of_bytes_transferred, (PULONG_PTR)client_info, &lp_overlapped, INFINITE) == false) {
+		if (GetQueuedCompletionStatus(iocp_handle_, &dw_number_of_bytes_transferred, (PULONG_PTR)client_session, &lp_overlapped, INFINITE) == false) {
 			// Completion Port 닫힘
 			if (lp_overlapped == NULL) {
 				// GetLastError() == ERROR_ABANDONED_WAIT_0
@@ -119,7 +121,7 @@ void IOCPNetwork::WorkerThread()
 				// 클라이언트 접속 끊김 (비정상)
 				if (dw_number_of_bytes_transferred == 0) {
 					PrintMessage("Client Disconnected!");
-					client_info->DisconnectClient();
+					client_session->DisconnectClient();
 
 					client_count_--;
 					continue;
@@ -137,27 +139,34 @@ void IOCPNetwork::WorkerThread()
 			// 클라이언트 접속 끊김 (정상)
 			if (dw_number_of_bytes_transferred == 0) {
 				PrintMessage("Client Disconnected!");
-				client_info->DisconnectClient();
+				client_session->DisconnectClient();
 
 				// 연결 종료 알림
-				server_.OnDisconnect(client_info->GetIndex());
+				server_.OnDisconnect(client_session->GetIndex());
 				client_count_--;
 
 				continue;
 			}
 		}
 
-		// 작업 결과에 따른 처리 (RECV / SEND / 예외)
+		// 작업 결과에 따른 처리 (ACCEPT / RECV / SEND / 예외)
 
 		OverlappedEx* overlapped_ex = reinterpret_cast<OverlappedEx*>(lp_overlapped);
 
-		if (overlapped_ex->operation == IOOperation::RECV) {
-			server_.OnReceive(client_info->GetIndex(), dw_number_of_bytes_transferred, client_info->GetRecvBuf());
+		if (overlapped_ex->operation == IOOperation::ACCEPT) {
+			// 클라이언트 접속 완료
+			client_session->AcceptComplete(iocp_handle_, overlapped_ex->client_socket);
+			client_count_++;
+
+			// 연결 완료 알림
+			server_.OnConnect(client_session->GetIndex());
+		}
+		else if (overlapped_ex->operation == IOOperation::RECV) {
+			server_.OnReceive(client_session->GetIndex(), dw_number_of_bytes_transferred, client_session->GetRecvBuf());
 		}
 		else if (overlapped_ex->operation == IOOperation::SEND) {
-			delete[] overlapped_ex->wsa_buf.buf;
-			delete overlapped_ex;
-			server_.OnSend(client_info->GetIndex(), dw_number_of_bytes_transferred);
+			client_session->SendComplete();
+			server_.OnSend(client_session->GetIndex(), dw_number_of_bytes_transferred);
 		}
 		else {
 			// 예외 처리
@@ -167,32 +176,26 @@ void IOCPNetwork::WorkerThread()
 
 void IOCPNetwork::AccepterThread()
 {
-	SOCKADDR_IN	client_addr;
-	int			client_addr_len = sizeof(client_addr);
 
 	while (is_accepter_run_)
-	{
-		// 사용하지 않는 클라이언트 정보 구조체 벡터 반환
-		ClientSession* client_info = GetEmptyClientInfo();
-		if (client_info == nullptr) {
-			ErrorHandling("Client Full Error!");
-			return;
+	{	
+		// 비동기 I/O Accept
+		for (auto& client : client_sessions_) {
+
+			uint64_t cur_time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+
+			if (client.IsConnected() == true) {
+				continue;
+			}
+			else if (cur_time - client.GetLatestClosedTimeSec() <= kReuseSesionWaitTimesec) {
+				// 연결 끊어진지 얼마 안된 클라이언트는 넘기기
+				continue;
+			}
+
+			client.AcceptRequest(listen_socket_);
 		}
 
-		// 클라이언트 접속 요청 대기
-		SOCKET client_socket = accept(listen_socket_, (SOCKADDR*)&client_addr, &client_addr_len);
-		if (client_socket == INVALID_SOCKET) {
-			continue;
-		}
-
-		// 클라이언트 Init
-		client_info->InitClient(iocp_handle_, client_socket);
-
-		// 접속 알림
-		server_.OnConnect(client_info->GetIndex());
-
-		// 접속중인 클라이언트 수 증가
-		client_count_++;
+		std::this_thread::sleep_for(std::chrono::milliseconds(32));
 	}
 }
 
@@ -216,19 +219,6 @@ void IOCPNetwork::StopServer()
 	}
 
 	closesocket(listen_socket_);
-}
-
-ClientSession* IOCPNetwork::GetEmptyClientInfo()
-{
-	// 사용하지 않는 클라이언트 반환
-	for (auto& client_info : client_sessions_)
-	{
-		if (client_info.GetSocket() == INVALID_SOCKET) {
-			return &client_info;
-		}
-	}
-
-	return nullptr;
 }
 
 ClientSession* IOCPNetwork::GetClientSession(const uint32_t client_index)
