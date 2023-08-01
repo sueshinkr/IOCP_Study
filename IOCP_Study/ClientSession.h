@@ -25,7 +25,7 @@ public:
 	bool AcceptRequest(SOCKET listen_socket);
 
 	void SendComplete();
-	void AcceptComplete(HANDLE iocp_handle, SOCKET client_socket);
+	void AcceptComplete(HANDLE iocp_handle);
 
 	SOCKET		GetSocket() { return client_socket_; }
 	uint32_t	GetIndex() { return client_index_; }

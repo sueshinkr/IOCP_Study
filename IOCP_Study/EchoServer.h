@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "IOCPNetwork.h"
-#include "Packet.h"
+#include "PacketManager.h"
 
 class EchoServer : public IServer
 {
@@ -33,17 +33,5 @@ private:
 
 	// 패킷 매니저
 	std::unique_ptr<PacketManager> packet_manager_;
-
-	// 패킷 처리 쓰레드
-	std::thread packet_processor_thread_;
-
-	// 패킷 처리 쓰레드 동작 플래그
-	bool is_packet_processor_run_ = true;
-
-	// 패킷 처리 쓰레드 생성
-	void CreatePacketProcessorThread();
-
-	// 패킷 처리 쓰레드
-	void PacketProcessorThread();
 };
 

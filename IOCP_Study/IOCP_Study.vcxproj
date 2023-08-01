@@ -131,7 +131,7 @@
     <ClCompile Include="EchoServer.cpp" />
     <ClCompile Include="IOCPNetwork.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="PacketManager.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,7 +140,7 @@
     <ClInclude Include="EchoServer.h" />
     <ClInclude Include="IOCPNetwork.h" />
     <ClInclude Include="IServer.h" />
-    <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketManager.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -13,7 +13,7 @@ ClientSession::ClientSession(uint32_t index)
 	ZeroMemory(accept_buf_, sizeof(accept_buf_));
 }
 
-// 클라이언트 소켓 생성 후 iocp 등록
+// 클라이언트 소켓 생성
 bool ClientSession::InitSocket(HANDLE iocp_handle)
 {
 	client_socket_ = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_IP, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -22,11 +22,13 @@ bool ClientSession::InitSocket(HANDLE iocp_handle)
 		return false;
 	}
 
+	/*
 	HANDLE iocp_result = CreateIoCompletionPort((HANDLE)client_socket_, iocp_handle, (ULONG_PTR)this, 0);
 	if (iocp_result == NULL || iocp_result != iocp_handle) {
 		ErrorHandling("CreateIOCPNetwork() Error!", GetLastError());
 		return false;
 	}
+	*/
 
 	return true;
 }
@@ -85,6 +87,7 @@ bool ClientSession::RecvRequest()
 	recv_overlapped_ex_.wsa_buf.len = kMaxBufSize;
 	recv_overlapped_ex_.wsa_buf.buf = recv_buf_;
 	recv_overlapped_ex_.operation = IOOperation::RECV;
+	recv_overlapped_ex_.client_index = client_index_;
 
 	if (WSARecv(client_socket_,
 		&(recv_overlapped_ex_.wsa_buf),
@@ -104,11 +107,13 @@ bool ClientSession::SendRequest(char* data, DWORD data_size)
 {
 	// OverlappedEx 구조체 세팅
 	OverlappedEx* send_overlapped_ex = new OverlappedEx();
+	ZeroMemory(send_overlapped_ex, sizeof(OverlappedEx));
 
 	send_overlapped_ex->wsa_buf.len = data_size;
 	send_overlapped_ex->wsa_buf.buf = new char[data_size];
 	CopyMemory(send_overlapped_ex->wsa_buf.buf, data, data_size);
 	send_overlapped_ex->operation = IOOperation::SEND;
+	send_overlapped_ex->client_index = client_index_;
 
 	// 일단 send 큐에 넣기
 	std::lock_guard<std::mutex> guard(send_queue_mutex_);
@@ -128,6 +133,7 @@ bool ClientSession::AcceptRequest(SOCKET listen_socket)
 	accept_overlapped_ex_.wsa_buf.len = 0;
 	accept_overlapped_ex_.wsa_buf.buf = NULL;
 	accept_overlapped_ex_.operation = IOOperation::ACCEPT;
+	accept_overlapped_ex_.client_index = client_index_;
 
 	if (AcceptEx(listen_socket,
 		client_socket_,
@@ -136,7 +142,7 @@ bool ClientSession::AcceptRequest(SOCKET listen_socket)
 		sizeof(SOCKADDR_IN) + 16,
 		sizeof(SOCKADDR_IN) + 16,
 		NULL,
-		(LPOVERLAPPED) & accept_overlapped_ex_) == FALSE) {
+		(LPWSAOVERLAPPED) & accept_overlapped_ex_) == FALSE) {
 		if (WSAGetLastError() != ERROR_IO_PENDING) {
 			ErrorHandling("AcceptEx() Error!", WSAGetLastError());
 			return false;
@@ -162,7 +168,7 @@ bool ClientSession::SendIO()
 		&(send_overlapped_ex->wsa_buf),
 		1,
 		&dw_number_of_byte_sent, dw_flags,
-		(LPWSAOVERLAPPED) & (send_overlapped_ex),
+		(LPWSAOVERLAPPED)send_overlapped_ex,
 		NULL) == SOCKET_ERROR && WSAGetLastError() != ERROR_IO_PENDING) {
 		ErrorHandling("WSASend() Error!", WSAGetLastError());
 		return false;
@@ -189,9 +195,9 @@ void ClientSession::SendComplete()
 	}
 }
 
-void ClientSession::AcceptComplete(HANDLE iocp_handle, SOCKET client_socket)
+void ClientSession::AcceptComplete(HANDLE iocp_handle)
 {
-	std::cout << "accepttttttttttttt\n";
+	BindClientToIOCP(iocp_handle);
 	// RECV 요청
 	RecvRequest();
 }
