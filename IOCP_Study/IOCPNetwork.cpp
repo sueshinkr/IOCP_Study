@@ -69,7 +69,7 @@ void IOCPNetwork::CreateClient()
 {
 	client_sessions_.reserve(max_client_count_);
 
-	for (uint32_t i = 0; i < max_client_count_; i++) {
+	for (auto i = 0; i < max_client_count_; i++) {
 		client_sessions_.emplace_back(i);
 		client_sessions_[i].SetIndex(i);
 

@@ -21,7 +21,7 @@ public:
 	void DisconnectClient(bool isForce = false);
 
 	bool RecvRequest();
-	bool SendRequest(char* data, DWORD data_size);
+	bool SendRequest(uint32_t data_size, char* data);
 	bool AcceptRequest(SOCKET listen_socket);
 
 	void SendComplete();

@@ -18,9 +18,9 @@ void PacketManager::StopPacketProcessor()
 void PacketManager::RegisterPacketProcessFunction()
 {
 	// 이런식으로 추가
-	packet_process_function_map_[(int)PACKET_ID::SYS_USER_CONNECT] = &PacketManager::ProcessUserConnect;
-	packet_process_function_map_[(int)PACKET_ID::SYS_USER_DISCONNECT] = &PacketManager::ProcessUserDisconnect;
-	packet_process_function_map_[(int)PACKET_ID::LOGIN_REQUEST] = &PacketManager::ProcessLoginRequest;
+	packet_process_function_map_[(int)PacketId::kSysUserConnect] = &PacketManager::ProcessUserConnect;
+	packet_process_function_map_[(int)PacketId::kSysUserDisconnect] = &PacketManager::ProcessUserDisconnect;
+	packet_process_function_map_[(int)PacketId::kLoginRequest] = &PacketManager::ProcessLoginRequest;
 }
 
 void PacketManager::CreatePacketProcessorThread()
@@ -70,18 +70,44 @@ void PacketManager::ProcessPacket(RequestPacket packet)
 void PacketManager::ProcessUserConnect(uint32_t client_index, uint32_t data_size, char* data)
 {
 	std::cout << "User Connected!" << std::endl;
-	// 유저 정보 초기화
+	// 유저풀에서 객체 하나 꺼내오기
 }
 
 void PacketManager::ProcessUserDisconnect(uint32_t client_index, uint32_t data_size, char* data)
 {
 	std::cout << "User DisConnected!" << std::endl;
+	// 꺼내왔던 유저 객체 초기화
 }
 
 void PacketManager::ProcessLoginRequest(uint32_t client_index, uint32_t data_size, char* data)
 {
+	// 패킷 오류
+	if (data_size != sizeof(LoginRequestPacket)) {
+		return;
+	}
+
 	// 로그인 로직
-	// 유저 객체에서 이것저것 
+	auto login_request = reinterpret_cast<LoginRequestPacket*>(data);
+
+	LoginResponsePacket login_response;
+	login_response.packet_id_ = (uint16_t)PacketId::kLoginResponse;
+	login_response.packet_size_ = sizeof(LoginResponsePacket);
+	 
+	// 최대 인원수 초과
+	if (user_manager_->GetCurrentUserCount() >= user_manager_->GetMaxUserCount()) {
+		login_response.result = -1; // 추후 에러코드 처리
+	}
+	// 중복 로그인
+	else if (user_manager_->GetUserByID(login_request->user_id_) == nullptr) {
+		login_response.result = -2; // 추후 에러코드 처리
+	}
+	// 정상 로그인
+	else {
+		login_response.result = 0;
+		user_manager_->AddUser(login_request->user_id_, client_index);
+	}
+
+	send_request_(client_index, sizeof(LoginResponsePacket), reinterpret_cast<char*>(&login_response));
 }
 
 void PacketManager::EnqueueRequestPacket(const uint32_t client_index, const uint32_t data_size, char* data)
@@ -111,3 +137,8 @@ RequestPacket PacketManager::DequeueRequestPacket()
 	return packet;
 }
 
+PacketManager::PacketManager(uint16_t max_client, SendRequest send_request)
+{
+	user_manager_ = std::make_unique<UserManager>(max_client);
+	send_request_ = send_request;
+}

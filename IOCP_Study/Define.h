@@ -62,19 +62,36 @@ struct RequestPacket
 	}
 };
 
-enum class  PACKET_ID : UINT16
+struct PacketHeader
+{
+	uint16_t packet_id_;
+	uint16_t packet_size_;
+};
+
+struct LoginRequestPacket : public PacketHeader
+{
+	std::string user_id_;
+	std::string user_pw_;
+};
+
+struct LoginResponsePacket : public PacketHeader
+{
+	uint16_t result;
+};
+
+enum class  PacketId : uint16_t
 {
 	//SYSTEM
-	SYS_USER_CONNECT = 11,
-	SYS_USER_DISCONNECT = 12,
-	SYS_END = 30,
+	kSysUserConnect = 11,
+	kSysUserDisconnect = 12,
+	kSysEnd = 30,
 
 	//DB
 	DB_END = 199,
 
 	//Client
-	LOGIN_REQUEST = 201,
-	LOGIN_RESPONSE = 202,
+	kLoginRequest = 201,
+	kLoginResponse = 202,
 
 	ROOM_ENTER_REQUEST = 206,
 	ROOM_ENTER_RESPONSE = 207,

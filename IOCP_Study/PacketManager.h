@@ -7,13 +7,16 @@
 #include <functional>
 
 #include "Define.h"
+#include "UserManager.h"
 #include "Util.h"
 
 
 class PacketManager
 {
 public:
-	PacketManager() {}
+	using SendRequest = std::function<void(uint32_t, uint32_t, char*)>;
+	
+	PacketManager(uint16_t max_client, SendRequest send_request);
 	~PacketManager() {}
 
 	void StartPacketProcessor();
@@ -22,7 +25,12 @@ public:
 	void EnqueueRequestPacket(const uint32_t client_index, const uint32_t data_size, char* data);
 	RequestPacket DequeueRequestPacket();
 
+	
+
 private:
+	// 유저 매니저
+	std::unique_ptr<UserManager> user_manager_;
+
 	// 패킷 큐
 	std::deque<RequestPacket> packet_queue_;
 
@@ -37,6 +45,9 @@ private:
 	
 	// 패킷 처리 함수 map
 	std::unordered_map<int, packet_process_function_> packet_process_function_map_;
+
+	// send 함수 포인터
+	std::function<void(uint32_t, uint32_t, char*)> send_request_;
 
 	// 패킷 처리 함수 등록
 	void RegisterPacketProcessFunction();
@@ -57,5 +68,6 @@ private:
 	void ProcessUserConnect(uint32_t client_index, uint32_t data_size, char* data);
 	void ProcessUserDisconnect(uint32_t client_index, uint32_t data_size, char* data);
 	void ProcessLoginRequest(uint32_t client_index, uint32_t data_size, char* data);
+	
 	
 };

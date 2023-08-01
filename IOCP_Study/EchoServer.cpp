@@ -1,6 +1,14 @@
 #include "EchoServer.h"
 #include "PacketManager.h"
 
+EchoServer::EchoServer(uint16_t max_client)
+{
+	iocp_network_ = std::make_unique<IOCPNetwork>(*this);
+	packet_manager_ = std::make_unique<PacketManager>(max_client, [this](uint32_t client_index, uint32_t data_size, char* data) {
+		SendRequest(client_index, data_size, data);
+		});
+}
+
 void EchoServer::StartServer()
 {
 	packet_manager_->StartPacketProcessor();
@@ -37,4 +45,10 @@ void EchoServer::OnSend(const uint32_t client_index, const uint32_t data_size)
 {
 	std::cout << "Client " << client_index << " sent " << data_size << " bytes!" << std::endl;
 }
+
+void EchoServer::SendRequest(uint32_t client_index, uint32_t data_size, char* data)
+{
+	iocp_network_->GetClientSession(client_index)->SendRequest(data_size, data);
+}
+
 

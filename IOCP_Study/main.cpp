@@ -3,18 +3,18 @@
 #include "EchoServer.h"
 
 // 서버 포트 및 최대 접속 클라이언트 수
-const uint16_t SERVER_PORT = 11021;
-const uint16_t MAX_CLIENT = 100;
+const uint16_t kServerPort = 11021;
+const uint16_t kMaxClient = 100;
 
 int main()
 {
-	EchoServer	echo_server;
+	EchoServer	echo_server(kMaxClient);
 
 	// 소켓 초기화
 	echo_server.InitServerSocket();
 
 	// 소켓 바인딩, 리슨
-	echo_server.BindandListenServerSocket(SERVER_PORT);
+	echo_server.BindandListenServerSocket(kServerPort);
 
 	// 서버 ON
 	echo_server.StartServer();
@@ -53,6 +53,11 @@ int main()
 // 8단계
 // 실질적인 로직들 구현
 // server에서 생성해 사용하고있는 패킷 쓰레드를 패킷매니저에서 관리하도록 변경
-// 유저 객체 만들기
+// 유저매니저에서 유저 객체풀 만들어서 사용
 // 시스템 패킷과 유저 패킷 구분 << 하지말고 하나의 큐로 처리해보기
-// 
+
+
+// 9단계
+// 레디스 적용
+// 레디스 쓰레드 별도로 만들어서 비동기로 작동하도록 (패킷쓰레드에서 작동하면 안됨)
+// 예외처리 잘해야됨... (ex DB요청하고 비동기로 응답받기 전에 상태가 달라졌을 경우 등)

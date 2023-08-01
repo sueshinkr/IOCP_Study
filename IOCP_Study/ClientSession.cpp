@@ -21,15 +21,6 @@ bool ClientSession::InitSocket(HANDLE iocp_handle)
 		ErrorHandling("WSASocket() Error!", WSAGetLastError());
 		return false;
 	}
-
-	/*
-	HANDLE iocp_result = CreateIoCompletionPort((HANDLE)client_socket_, iocp_handle, (ULONG_PTR)this, 0);
-	if (iocp_result == NULL || iocp_result != iocp_handle) {
-		ErrorHandling("CreateIOCPNetwork() Error!", GetLastError());
-		return false;
-	}
-	*/
-
 	return true;
 }
 
@@ -60,6 +51,7 @@ void ClientSession::DisconnectClient(bool isForce)
 	closesocket(client_socket_);
 
 	// 클라이언트 정보 구조체 초기화
+	Clear();
 	client_socket_ = INVALID_SOCKET;
 	*/
 }
@@ -103,7 +95,7 @@ bool ClientSession::RecvRequest()
 }
 
 // SEND 요청
-bool ClientSession::SendRequest(char* data, DWORD data_size)
+bool ClientSession::SendRequest(uint32_t data_size, char* data)
 {
 	// OverlappedEx 구조체 세팅
 	OverlappedEx* send_overlapped_ex = new OverlappedEx();
