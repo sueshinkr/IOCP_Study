@@ -1,18 +1,23 @@
 #include "EchoServer.h"
-#include "PacketManager.h"
 
 EchoServer::EchoServer(uint16_t max_client)
 {
 	iocp_network_ = std::make_unique<IOCPNetwork>(*this);
-	packet_manager_ = std::make_unique<PacketManager>(max_client, [this](uint32_t client_index, uint32_t data_size, char* data) {
-		SendRequest(client_index, data_size, data);
+	packet_manager_ = std::make_unique<PacketManager>(max_client, 
+		[this](uint32_t client_index, uint32_t data_size, char* data) {
+			SendRequest(client_index, data_size, data);
 		});
 }
 
-void EchoServer::StartServer()
+bool EchoServer::StartServer()
 {
-	packet_manager_->StartPacketProcessor();
+	if (packet_manager_->StartPacketProcessor() == false) {
+		return false;
+	}
+
 	iocp_network_->StartServer();
+
+	return true;
 }
 
 void EchoServer::StopServer()
@@ -22,14 +27,18 @@ void EchoServer::StopServer()
 	iocp_network_->StopServer();
 }
 
-void EchoServer::OnConnect(const uint32_t client_index)
+void EchoServer::OnConnect(const uint32_t client_index, const uint32_t data_size, char* data)
 {
 	std::cout << "Client " << client_index << " connected!" << std::endl;
+
+	packet_manager_->EnqueueRequestPacket(client_index, data_size, data);
 }
 
-void EchoServer::OnDisconnect(const uint32_t client_index)
+void EchoServer::OnDisconnect(const uint32_t client_index, const uint32_t data_size, char* data)
 {
 	std::cout << "Client " << client_index << " disconnected!" << std::endl;
+
+	packet_manager_->EnqueueRequestPacket(client_index, data_size, data);
 }
 
 void EchoServer::OnReceive(const uint32_t client_index, const uint32_t data_size, char* data)

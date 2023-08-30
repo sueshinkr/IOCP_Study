@@ -1,11 +1,10 @@
 #pragma once
 #include "IServer.h"
 
-#include <iostream>
-
 #include "IOCPNetwork.h"
 #include "PacketManager.h"
-#include "UserManager.h"
+
+#include <iostream>
 
 class EchoServer : public IServer
 {
@@ -13,11 +12,11 @@ public:
 	EchoServer(uint16_t max_client);
 	~EchoServer() { }
 
-	void StartServer();
+	bool StartServer();
 	void StopServer();
 
-	void OnConnect(const uint32_t client_index) override;
-	void OnDisconnect(const uint32_t client_index) override;
+	void OnConnect(const uint32_t client_index, const uint32_t data_size, char* data) override;
+	void OnDisconnect(const uint32_t client_index, const uint32_t data_size, char* data) override;
 	void OnReceive(const uint32_t client_index, const uint32_t data_size, char* data) override;
 	void OnSend(const uint32_t client_index, const uint32_t data_size) override;
 

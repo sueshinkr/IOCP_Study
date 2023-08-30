@@ -45,6 +45,9 @@
     <ClCompile Include="UserManager.cpp">
       <Filter>소스 파일\Network</Filter>
     </ClCompile>
+    <ClCompile Include="RedisManager.cpp">
+      <Filter>소스 파일\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IOCPNetwork.h">
@@ -72,6 +75,9 @@
       <Filter>소스 파일\Network</Filter>
     </ClInclude>
     <ClInclude Include="UserManager.h">
+      <Filter>소스 파일\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="RedisManager.h">
       <Filter>소스 파일\Network</Filter>
     </ClInclude>
   </ItemGroup>

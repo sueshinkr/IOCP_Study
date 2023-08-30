@@ -31,31 +31,34 @@ struct OverlappedEx
 };
 
 // 패킷 구조체
-struct RequestPacket
+struct PacketInfo
 {
 	//패킷 데이터
 	uint32_t client_index_ = 0;
-	uint32_t data_size_ = 0;
 	uint16_t packet_id_ = 0;
+	uint32_t data_size_ = 0;
 	char* data_ = nullptr;
 	
-	RequestPacket() {}
+	PacketInfo() {}
 
-	RequestPacket(const uint32_t client_index, const uint32_t data_size, char* data)
+	PacketInfo(const uint32_t client_index, const uint16_t packet_id, 
+				  const uint32_t data_size, char* data)
 	{
-		Set(client_index, data_size, data);
+		Set(client_index, packet_id, data_size, data);
 	}
 	
-	void Set(RequestPacket& packet)
+	void Set(PacketInfo& packet)
 	{
-		Set(packet.client_index_, packet.data_size_, packet.data_);
+		Set(packet.client_index_, packet.packet_id_, packet.data_size_, packet.data_);
 
 		delete packet.data_;
 	}
 
-	void Set(const uint32_t client_index, const uint32_t data_size, char* data)
+	void Set(const uint32_t client_index, const uint16_t packet_id,
+			 const uint32_t data_size, char* data)
 	{
 		client_index_ = client_index;
+		packet_id_ = packet_id;
 		data_size_ = data_size;
 		data_ = new char[data_size_];
 		CopyMemory(data_, data, data_size_);
@@ -64,25 +67,41 @@ struct RequestPacket
 
 struct PacketHeader
 {
-	uint16_t packet_id_;
 	uint16_t packet_size_;
+	uint16_t packet_id_;
 };
+
+const int MAX_USER_ID_LEN = 32;
+const int MAX_USER_PW_LEN = 32;
+
 
 struct LoginRequestPacket : public PacketHeader
 {
-	std::string user_id_;
-	std::string user_pw_;
+	char user_id_[MAX_USER_ID_LEN + 1];
+	char user_pw_[MAX_USER_PW_LEN + 1];
 };
 
 struct LoginResponsePacket : public PacketHeader
 {
-	uint16_t result;
+	uint16_t result_;
+};
+
+struct LoginDBRequestPacket : public PacketHeader
+{
+	char user_id_[MAX_USER_ID_LEN + 1];
+	char user_pw_[MAX_USER_PW_LEN + 1];
+};
+
+struct LoginDBResponsePacket : public PacketHeader
+{
+	char user_id_[MAX_USER_ID_LEN + 1];
+	uint16_t result_;
 };
 
 enum class  PacketId : uint16_t
 {
 	//SYSTEM
-	kSysUserConnect = 11,
+	kSysUserConnect = 0,
 	kSysUserDisconnect = 12,
 	kSysEnd = 30,
 
@@ -92,6 +111,8 @@ enum class  PacketId : uint16_t
 	//Client
 	kLoginRequest = 201,
 	kLoginResponse = 202,
+	kLoginDBRequest = 203,
+	kLoginDBResponse = 204,
 
 	ROOM_ENTER_REQUEST = 206,
 	ROOM_ENTER_RESPONSE = 207,
@@ -102,4 +123,8 @@ enum class  PacketId : uint16_t
 	ROOM_CHAT_REQUEST = 221,
 	ROOM_CHAT_RESPONSE = 222,
 	ROOM_CHAT_NOTIFY = 223,
+
+	//REDIS
+	kRedisLogin,
+
 };

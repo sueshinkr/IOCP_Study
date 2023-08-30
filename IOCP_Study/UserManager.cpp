@@ -40,3 +40,11 @@ void UserManager::AddUser(std::string user_id, uint32_t user_index)
 
 	current_user_count_++;
 }
+
+void UserManager::DeleteUser(User* user)
+{
+	user_id_index_map_.erase(user->GetUserID());
+	user->Clear();
+
+	current_user_count_--;
+}

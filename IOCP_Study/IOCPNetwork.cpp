@@ -152,7 +152,8 @@ void IOCPNetwork::WorkerThread()
 				client_session->DisconnectClient();
 
 				// 연결 종료 알림
-				server_.OnDisconnect(client_session->GetIndex());
+				server_.OnDisconnect(client_session->GetIndex(), dw_number_of_bytes_transferred,
+									 client_session->GetRecvBuf());
 				client_count_--;
 
 				continue;
@@ -167,10 +168,12 @@ void IOCPNetwork::WorkerThread()
 				client_count_++;
 
 				// 연결 완료 알림
-				server_.OnConnect(client_session->GetIndex());
+				server_.OnConnect(client_session->GetIndex(), dw_number_of_bytes_transferred,
+								  client_session->GetRecvBuf());
 			}
 			else if (overlapped_ex->operation == IOOperation::RECV) {
-				server_.OnReceive(client_session->GetIndex(), dw_number_of_bytes_transferred, client_session->GetRecvBuf());
+				server_.OnReceive(client_session->GetIndex(), dw_number_of_bytes_transferred,
+								  client_session->GetRecvBuf());
 				client_session->RecvRequest();
 			}
 			else if (overlapped_ex->operation == IOOperation::SEND) {

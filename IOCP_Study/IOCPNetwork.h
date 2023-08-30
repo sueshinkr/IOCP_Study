@@ -1,14 +1,13 @@
 #pragma once
 #pragma comment(lib, "ws2_32")
 
+#include "IServer.h"
+#include "ClientSession.h"
+
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 #include <thread>
 #include <vector>
-#include "IServer.h"
-#include "ClientSession.h"
-
-class IServer;
 
 // IOCP 클래스
 class IOCPNetwork

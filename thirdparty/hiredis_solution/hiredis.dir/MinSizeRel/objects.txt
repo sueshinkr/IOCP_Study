@@ -1,0 +1,7 @@
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/alloc.obj
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/async.obj
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/hiredis.obj
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/net.obj
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/read.obj
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/sds.obj
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/hiredis.dir/MinSizeRel/sockcompat.obj
