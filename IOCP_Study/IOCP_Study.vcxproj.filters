@@ -19,6 +19,9 @@
     <Filter Include="소스 파일\Server">
       <UniqueIdentifier>{020fd0e8-face-4d03-ab59-bd130630bbff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\thirdparty">
+      <UniqueIdentifier>{dc7f8707-61f7-4e9f-8197-1cfe75fe4577}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="RedisManager.cpp">
       <Filter>소스 파일\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="thirdparty\RedisClient.cpp">
+      <Filter>소스 파일\thirdparty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="RedisManager.h">
       <Filter>소스 파일\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\RedisClient.hpp">
+      <Filter>소스 파일\thirdparty</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

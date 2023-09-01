@@ -1,5 +1,4 @@
 #include "PacketManager.h"
-#include "RedisManager.h"
 
 PacketManager::~PacketManager()
 {
@@ -161,7 +160,7 @@ void PacketManager::ProcessLoginDBResponse(uint32_t client_index, uint32_t data_
 
 	auto login_db_response = reinterpret_cast<LoginDBResponsePacket*>(data);
 
-	if (login_db_response->result_ != 0) {
+	if (login_db_response->result_ == 0) {
 		user_manager_->AddUser(login_db_response->user_id_, client_index);
 		std::cout << "Login Success\n";
 	}
@@ -201,3 +200,4 @@ std::optional<PacketInfo> PacketManager::DequeueRequestPacket()
 
 	return packet;
 }
+

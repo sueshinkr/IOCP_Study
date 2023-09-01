@@ -1,7 +1,0 @@
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/hiredis.dir
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/hiredis-test.dir
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/PACKAGE.dir
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/RUN_TESTS.dir
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/INSTALL.dir
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/ALL_BUILD.dir
-C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/hiredis_solution/CMakeFiles/ZERO_CHECK.dir

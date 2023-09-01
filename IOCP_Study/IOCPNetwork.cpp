@@ -172,6 +172,9 @@ void IOCPNetwork::WorkerThread()
 								  client_session->GetRecvBuf());
 			}
 			else if (overlapped_ex->operation == IOOperation::RECV) {
+				auto packet = (LoginRequestPacket*)client_session->GetRecvBuf();
+				std::cout << "onreceive id : " << packet->user_id_ << std::endl;
+
 				server_.OnReceive(client_session->GetIndex(), dw_number_of_bytes_transferred,
 								  client_session->GetRecvBuf());
 				client_session->RecvRequest();

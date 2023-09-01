@@ -10,8 +10,7 @@
 #include "Define.h"
 #include "Util.h"
 #include "UserManager.h"
-
-class RedisManager;
+#include "RedisManager.h"
 
 class PacketManager
 {

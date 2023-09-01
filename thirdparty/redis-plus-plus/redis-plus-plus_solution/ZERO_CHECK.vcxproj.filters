@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\SSC\Desktop\Study\IOCP_Study\thirdparty\redis-plus-plus\redis-plus-plus_solution\CMakeFiles\630701ad2632d3ce725b51e003e81d14\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\SSC\Desktop\Study\IOCP_Study\thirdparty\redis-plus-plus\redis-plus-plus\cmake\redis++-config.cmake.in">
+      <Filter>Buildsystem Input Files\cmake</Filter>
+    </None>
+    <None Include="C:\Users\SSC\Desktop\Study\IOCP_Study\thirdparty\redis-plus-plus\redis-plus-plus\cmake\redis++.pc.in">
+      <Filter>Buildsystem Input Files\cmake</Filter>
+    </None>
+    <None Include="C:\Users\SSC\Desktop\Study\IOCP_Study\thirdparty\redis-plus-plus\redis-plus-plus\hiredis_features.h.in">
+      <Filter>Buildsystem Input Files</Filter>
+    </None>
+    <None Include="C:\Users\SSC\Desktop\Study\IOCP_Study\thirdparty\redis-plus-plus\redis-plus-plus\test\CMakeLists.txt">
+      <Filter>Buildsystem Input Files\test</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{BF36678C-E2D7-3A8A-8D40-AD985E667579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{23DC403F-4FCF-3983-8B1D-0871C74EA6E2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files">
+      <UniqueIdentifier>{D252E2E4-596C-3F9C-9971-C45C48B5D4BC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files\cmake">
+      <UniqueIdentifier>{7D73D240-F269-3F27-BD67-F1DC9BEE064C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files\test">
+      <UniqueIdentifier>{E8F48365-AC4A-38EA-87CE-412BF3E9E63C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

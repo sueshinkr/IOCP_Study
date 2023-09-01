@@ -1,0 +1,32 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.27/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeCXXInformation.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakePackageConfigHelpers.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CPack.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CPackComponent.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/CheckSymbolExists.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Compiler/MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Compiler/MSVC.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/GNUInstallDirs.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Platform/Windows-Initialize.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Platform/Windows.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake/share/cmake-3.27/Modules/WriteBasicConfigVersionFile.cmake
+C:/Program Files/CMake/share/cmake-3.27/Templates/CPackConfig.cmake.in
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus/CMakeLists.txt
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus/cmake/redis++-config.cmake.in
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus/cmake/redis++.pc.in
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus/hiredis_features.h.in
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus_solution/CMakeFiles/3.27.0/CMakeCXXCompiler.cmake
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus_solution/CMakeFiles/3.27.0/CMakeRCCompiler.cmake
+C:/Users/SSC/Desktop/Study/IOCP_Study/thirdparty/redis-plus-plus/redis-plus-plus_solution/CMakeFiles/3.27.0/CMakeSystem.cmake

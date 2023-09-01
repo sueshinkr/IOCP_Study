@@ -65,10 +65,12 @@ struct PacketInfo
 	}
 };
 
+#pragma pack(push,1)
 struct PacketHeader
 {
 	uint16_t packet_size_;
 	uint16_t packet_id_;
+	uint8_t  packet_type_;
 };
 
 const int MAX_USER_ID_LEN = 32;
@@ -97,6 +99,7 @@ struct LoginDBResponsePacket : public PacketHeader
 	char user_id_[MAX_USER_ID_LEN + 1];
 	uint16_t result_;
 };
+#pragma pack(pop)
 
 enum class  PacketId : uint16_t
 {
@@ -126,5 +129,4 @@ enum class  PacketId : uint16_t
 
 	//REDIS
 	kRedisLogin,
-
 };
