@@ -15,6 +15,8 @@ void IOCPNetwork::InitServerSocket()
 		ErrorHandling("WSASocket() Error!", WSAGetLastError());
 	}
 
+	std::cout << "[] ...Socket init Success!\n";
+
 	return;
 }
 
@@ -50,7 +52,8 @@ void IOCPNetwork::BindandListenServerSocket(uint16_t serverPort)
 		ErrorHandling("CreateIOCPNetwork() Error!", GetLastError());
 	}
 
-return;
+	std::cout << "[] ...Server registration Success!\n";
+	return;
 }
 
 void IOCPNetwork::StartServer()
@@ -63,6 +66,8 @@ void IOCPNetwork::StartServer()
 
 	// accepter 쓰레드 생성
 	CreateAccepterThread();
+
+	std::cout << "--------Server Start!---------\n";
 }
 
 void IOCPNetwork::CreateClient()
@@ -90,6 +95,8 @@ void IOCPNetwork::CreateWorkerThread()
 	if (worker_threads_.size() != kMaxWorkerThread) {
 		ErrorHandling("CreateWorkerThread() Error!");
 	}
+
+	std::cout << "[] ...WorkerThreads are Running...\n";
 }
 
 // accepter 쓰레드 생성
@@ -100,6 +107,8 @@ void IOCPNetwork::CreateAccepterThread()
 	if (accepter_thread_.joinable() == false) {
 		ErrorHandling("CreateAccepterThread() Error!");
 	}
+
+	std::cout << "[] ...AccepterThread is Running...\n";
 }
 
 void IOCPNetwork::WorkerThread()
@@ -128,8 +137,11 @@ void IOCPNetwork::WorkerThread()
 			else {
 				// 클라이언트 접속 끊김 (비정상)
 				if (dw_number_of_bytes_transferred == 0) {
-					PrintMessage("Client Disconnected!");
 					client_session->DisconnectClient();
+
+					// 연결 종료 알림
+					server_.OnDisconnect(client_session->GetIndex(), dw_number_of_bytes_transferred,
+						client_session->GetRecvBuf());
 
 					client_count_--;
 					continue;
@@ -148,7 +160,6 @@ void IOCPNetwork::WorkerThread()
 
 			// 클라이언트 접속 끊김 (정상)
 			if (dw_number_of_bytes_transferred == 0 && overlapped_ex->operation != IOOperation::ACCEPT) {
-				PrintMessage("Client Disconnected!");
 				client_session->DisconnectClient();
 
 				// 연결 종료 알림
@@ -173,7 +184,6 @@ void IOCPNetwork::WorkerThread()
 			}
 			else if (overlapped_ex->operation == IOOperation::RECV) {
 				auto packet = (LoginRequestPacket*)client_session->GetRecvBuf();
-				std::cout << "onreceive id : " << packet->user_id_ << std::endl;
 
 				server_.OnReceive(client_session->GetIndex(), dw_number_of_bytes_transferred,
 								  client_session->GetRecvBuf());

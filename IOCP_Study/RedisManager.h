@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "Define.h"
+#include "ErrorCode.h"
 #include "thirdparty\RedisClient.hpp"
 
 class RedisManager
@@ -37,6 +38,7 @@ private:
 
 	// 레디스 작업 함수들
 	void ProcessLoginRequest(uint32_t user_index, uint32_t packet_size, char* packet);
+	void ProcessLogoutRequest(uint32_t user_index, uint32_t packet_size, char* packet);
 
 	// 레디스 객체
 	CRedisClient redis;

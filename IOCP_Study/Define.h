@@ -4,14 +4,31 @@
 #include <WS2tcpip.h>
 #include <cstdint>
 
+// 최대 접속 클라이언트 수
+const uint16_t kMaxClient = 10000;
+
 // 버퍼 사이즈
 const uint32_t kMaxBufSize = 1024;
 
 // 최대 worker 쓰레드 수
 const uint16_t kMaxWorkerThread = 4;
 
-// 
 const uint64_t kReuseSesionWaitTimesec = 3;
+
+// 아이디, 비번 최대 사이즈
+const uint16_t kMaxUserIdLen = 32;
+const uint16_t kMaxUserPwLen = 32;
+
+// 룸 최대 갯수
+const uint16_t kMaxRoom = 100;
+
+// 룸 최대 수용 인원수
+const uint16_t kMaxRoomCapacity = 1000;
+
+// 채팅 메시지 최대 사이즈
+const uint16_t kMaxChatMsgSize = 256;
+
+
 
 // worker 쓰레드에서 사용할 IO 작업 구분
 enum class IOOperation
@@ -66,6 +83,7 @@ struct PacketInfo
 };
 
 #pragma pack(push,1)
+
 struct PacketHeader
 {
 	uint16_t packet_size_;
@@ -73,14 +91,19 @@ struct PacketHeader
 	uint8_t  packet_type_;
 };
 
-const int MAX_USER_ID_LEN = 32;
-const int MAX_USER_PW_LEN = 32;
+struct SystemConnectPacket : public PacketHeader
+{
+};
 
+struct SystemDisConnectPacket : public PacketHeader
+{
+};
 
+// 로그인
 struct LoginRequestPacket : public PacketHeader
 {
-	char user_id_[MAX_USER_ID_LEN + 1];
-	char user_pw_[MAX_USER_PW_LEN + 1];
+	char user_id_[kMaxUserIdLen + 1];
+	char user_pw_[kMaxUserPwLen + 1];
 };
 
 struct LoginResponsePacket : public PacketHeader
@@ -90,43 +113,105 @@ struct LoginResponsePacket : public PacketHeader
 
 struct LoginDBRequestPacket : public PacketHeader
 {
-	char user_id_[MAX_USER_ID_LEN + 1];
-	char user_pw_[MAX_USER_PW_LEN + 1];
+	char user_id_[kMaxUserIdLen + 1];
+	char user_pw_[kMaxUserPwLen + 1];
 };
 
 struct LoginDBResponsePacket : public PacketHeader
 {
-	char user_id_[MAX_USER_ID_LEN + 1];
+	char user_id_[kMaxUserIdLen + 1];
 	uint16_t result_;
 };
+
+// 로그아웃
+struct LogoutRequestPacket : public PacketHeader
+{
+	char user_id_[kMaxUserIdLen + 1];
+};
+
+struct LogoutResponsePacket : public PacketHeader
+{
+	uint16_t result_;
+};
+
+struct LogoutDBRequestPacket : public PacketHeader
+{
+	char user_id_[kMaxUserIdLen + 1];
+};
+
+struct LogoutDBResponsePacket : public PacketHeader
+{
+	char user_id_[kMaxUserIdLen + 1];
+	uint16_t result_;
+};
+
+// 룸 입장
+struct EnterRoomRequestPacket : public PacketHeader
+{
+	uint32_t room_index_;
+};
+
+struct EnterRoomResponsePacket : public PacketHeader
+{
+	uint16_t result_;
+};
+
+// 룸 퇴장
+struct LeaveRoomRequestPacket : public PacketHeader
+{
+};
+
+struct LeaveRoomResponsePacket : public PacketHeader
+{
+	uint16_t result_;
+};
+
+// 룸 채팅
+
+struct RoomChatRequestPacket : public PacketHeader
+{
+	char msg_[kMaxChatMsgSize + 1] = { 0, };
+};
+
+struct RoomChatResponsePacket : public PacketHeader
+{
+	uint16_t result_;
+};
+
+struct RoomChatNotifyPacket : public PacketHeader
+{
+	char user_Id_[kMaxUserIdLen + 1] = { 0, };
+	char msg_[kMaxChatMsgSize + 1] = { 0, };
+};
+
 #pragma pack(pop)
 
 enum class  PacketId : uint16_t
 {
 	//SYSTEM
-	kSysUserConnect = 0,
+	kSysUserConnect = 11,
 	kSysUserDisconnect = 12,
-	kSysEnd = 30,
-
-	//DB
-	DB_END = 199,
 
 	//Client
 	kLoginRequest = 201,
 	kLoginResponse = 202,
-	kLoginDBRequest = 203,
-	kLoginDBResponse = 204,
 
-	ROOM_ENTER_REQUEST = 206,
-	ROOM_ENTER_RESPONSE = 207,
+	kLogoutRequest = 203,
+	kLogoutResponse = 204,
 
-	ROOM_LEAVE_REQUEST = 215,
-	ROOM_LEAVE_RESPONSE = 216,
+	kEnterRoomRequest = 206,
+	kEnterRoomResponse = 207,
 
-	ROOM_CHAT_REQUEST = 221,
-	ROOM_CHAT_RESPONSE = 222,
-	ROOM_CHAT_NOTIFY = 223,
+	kLeaveRoomRequest = 215,
+	kLeaveRoomResponse = 216,
 
-	//REDIS
-	kRedisLogin,
+	kRoomChatRequest = 221,
+	kRoomChatResponse = 222,
+	kRoomChatNotify = 223,
+
+	//DB
+	kLoginDBRequest = 501,
+	kLoginDBResponse = 502,
+	kLogoutDBRequest = 503,
+	kLogoutDBResponse = 504,
 };

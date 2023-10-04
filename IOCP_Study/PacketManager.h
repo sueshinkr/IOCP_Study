@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "Define.h"
+#include "ErrorCode.h"
 #include "Util.h"
 #include "UserManager.h"
+#include "RoomManager.h"
 #include "RedisManager.h"
 
 class PacketManager
@@ -17,7 +19,7 @@ class PacketManager
 public:
 	using SendRequest = std::function<void(uint32_t, uint32_t, char*)>;
 	
-	PacketManager(uint16_t max_client, SendRequest send_request);
+	PacketManager(SendRequest send_request);
 	~PacketManager();
 
 	bool StartPacketProcessor();
@@ -45,11 +47,22 @@ private:
 	// 패킷 처리 함수들
 	void ProcessUserConnect(uint32_t client_index, uint32_t data_size, char* data);
 	void ProcessUserDisconnect(uint32_t client_index, uint32_t data_size, char* data);
+	
 	void ProcessLoginRequest(uint32_t client_index, uint32_t data_size, char* data);
 	void ProcessLoginDBResponse(uint32_t clinet_index, uint32_t data_size, char* data);
 
+	void ProcessLogoutRequest(uint32_t client_index, uint32_t data_size, char* data);
+	void ProcessLogoutDBResponse(uint32_t clinet_index, uint32_t data_size, char* data);
+
+	void ProcessEnterRoomRequest(uint32_t client_index, uint32_t data_size, char* data);
+	void ProcessLeaveRoomRequest(uint32_t client_index, uint32_t data_size, char* data);
+	void ProcessRoomChatRequest(uint32_t client_index, uint32_t data_size, char* data);
+
 	// 유저 매니저
 	std::unique_ptr<UserManager> user_manager_;
+
+	// 룸 매니저
+	std::unique_ptr<RoomManager> room_manager_;
 
 	// 레디스 매니저
 	std::unique_ptr<RedisManager> redis_manager_;
@@ -76,5 +89,5 @@ private:
 	std::unordered_map<int, packet_process_function_> packet_process_function_map_;
 
 	// send 함수 포인터
-	std::function<void(uint32_t, uint32_t, char*)> send_request_;
+	std::function<void(uint32_t, uint32_t, char*)> send_func_;
 };

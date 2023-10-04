@@ -45,7 +45,7 @@ private:
 	std::vector<ClientSession> client_sessions_;
 
 	// 최대 클라이언트 수
-	const uint32_t max_client_count_ = 5;
+	const uint32_t max_client_count_ = 10000;
 
 	// 접속중인 클라이언트 수
 	int32_t client_count_ = 0;

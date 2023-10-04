@@ -2,18 +2,20 @@
 #include <vector>
 #include <unordered_map>
 
+#include "Define.h"
 #include "User.h"
 
 class UserManager
 {
 public:
-	UserManager(uint16_t max_client);
+	UserManager();
 	~UserManager();
 
-	User*	GetUserByIndex(const uint32_t user_index);
-	User*	GetUserByID(const std::string user_id);
-	void	AddUser(std::string user_id, uint32_t user_index);
-	void	DeleteUser(User* user);
+	User*		GetUserByIndex(const uint32_t user_index);
+	User*		GetUserByID(const std::string user_id);
+	uint32_t	GetUserIndexByID(const std::string user_id);
+	void		AddUser(std::string user_id, uint32_t user_index);
+	void		DelUser(User* user);
 
 	uint64_t GetCurrentUserCount() { return current_user_count_; }
 	uint64_t GetMaxUserCount() { return max_user_count_; }

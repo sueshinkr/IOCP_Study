@@ -30,7 +30,7 @@
     <ClCompile Include="IOCPNetwork.cpp">
       <Filter>소스 파일\Network</Filter>
     </ClCompile>
-    <ClCompile Include="EchoServer.cpp">
+    <ClCompile Include="ChatServer.cpp">
       <Filter>소스 파일\Server</Filter>
     </ClCompile>
     <ClCompile Include="ClientSession.cpp">
@@ -54,6 +54,15 @@
     <ClCompile Include="thirdparty\RedisClient.cpp">
       <Filter>소스 파일\thirdparty</Filter>
     </ClCompile>
+    <ClCompile Include="ErrorCode.h">
+      <Filter>헤더 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>소스 파일\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>소스 파일\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IOCPNetwork.h">
@@ -62,7 +71,7 @@
     <ClInclude Include="Define.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="EchoServer.h">
+    <ClInclude Include="ChatServer.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
     <ClInclude Include="IServer.h">
@@ -88,6 +97,12 @@
     </ClInclude>
     <ClInclude Include="thirdparty\RedisClient.hpp">
       <Filter>소스 파일\thirdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
+      <Filter>소스 파일\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

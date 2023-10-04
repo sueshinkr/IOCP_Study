@@ -136,11 +136,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClientSession.cpp" />
-    <ClCompile Include="EchoServer.cpp" />
+    <ClCompile Include="ChatServer.cpp" />
+    <ClCompile Include="ErrorCode.h" />
     <ClCompile Include="IOCPNetwork.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketManager.cpp" />
     <ClCompile Include="RedisManager.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="thirdparty\RedisClient.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="UserManager.cpp" />
@@ -149,11 +152,13 @@
   <ItemGroup>
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="Define.h" />
-    <ClInclude Include="EchoServer.h" />
+    <ClInclude Include="ChatServer.h" />
     <ClInclude Include="IOCPNetwork.h" />
     <ClInclude Include="IServer.h" />
     <ClInclude Include="PacketManager.h" />
     <ClInclude Include="RedisManager.h" />
+    <ClInclude Include="Room.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="thirdparty\RedisClient.hpp" />
     <ClInclude Include="User.h" />
     <ClInclude Include="UserManager.h" />

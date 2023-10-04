@@ -1,11 +1,11 @@
 #include "UserManager.h"
 
-UserManager::UserManager(uint16_t max_client)
+UserManager::UserManager()
 {
-	max_user_count_ = max_client;
-	user_pool_.reserve(max_user_count_);
+	max_user_count_ = kMaxClient;
+	user_pool_.reserve(kMaxClient);
 
-	for (int i = 0; i < max_client; i++)
+	for (int i = 0; i < kMaxClient; i++)
 	{
 		user_pool_.push_back(new User(i));
 	}
@@ -26,11 +26,27 @@ User* UserManager::GetUserByIndex(const uint32_t user_index)
 
 User* UserManager::GetUserByID(const std::string user_id)
 {
-	if (user_id_index_map_.find(user_id) != user_id_index_map_.end()) {
-		return user_pool_[user_id_index_map_[user_id]];
+	auto res = user_id_index_map_.find(user_id);
+
+	if (res != user_id_index_map_.end()) {
+		return user_pool_[(*res).second];
 	}
 
+	//if (user_id_index_map_.find(user_id) != user_id_index_map_.end()) {
+	//	return user_pool_[user_id_index_map_[user_id]];
+	//}
 	return nullptr;
+}
+
+uint32_t UserManager::GetUserIndexByID(const std::string user_id)
+{
+	auto res = user_id_index_map_.find(user_id);
+
+	if (res != user_id_index_map_.end()) {
+		return (*res).second;
+	}
+
+	return -1;
 }
 
 void UserManager::AddUser(std::string user_id, uint32_t user_index)
@@ -41,10 +57,11 @@ void UserManager::AddUser(std::string user_id, uint32_t user_index)
 	current_user_count_++;
 }
 
-void UserManager::DeleteUser(User* user)
+void UserManager::DelUser(User* user)
 {
-	user_id_index_map_.erase(user->GetUserID());
-	user->Clear();
+	printf("DelUser\n");
+	user_id_index_map_.erase(user->GetUserId());
+	user->UserLogout();
 
 	current_user_count_--;
 }

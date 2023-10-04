@@ -29,31 +29,25 @@ void ClientSession::DisconnectClient(bool isForce)
 {
 	struct linger stLinger = { 0, 0 };
 
-	// 데이터 송수신 중단
-	shutdown(client_socket_, SD_BOTH);
-
-	// 소켓 재사용?
-	ZeroMemory(&accept_overlapped_ex_, sizeof(accept_overlapped_ex_));
-	TransmitFile(client_socket_, NULL, 0, 0, (LPOVERLAPPED)&accept_overlapped_ex_, NULL, TF_DISCONNECT | TF_REUSE_SOCKET);
-
-	latest_closed_time_sec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-	is_connected_ = false;
-	
-	/*
 	// 소켓 강제 종료 여부 결정
 	if (isForce == true) {
 		stLinger.l_onoff = 1;
 	}
 
+	is_connected_ = false;
+
+	// 데이터 송수신 중단
+	shutdown(client_socket_, SD_BOTH);
 	setsockopt(client_socket_, SOL_SOCKET, SO_LINGER, (char*)&stLinger, sizeof(stLinger));
 
 	// 소켓 닫기
+
+
 	closesocket(client_socket_);
+	latest_closed_time_sec = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 
 	// 클라이언트 정보 구조체 초기화
-	Clear();
 	client_socket_ = INVALID_SOCKET;
-	*/
 }
 
 // IOCP에 클라이언트 등록
@@ -71,7 +65,6 @@ bool ClientSession::BindClientToIOCP(HANDLE iocp_handle)
 // RECV 요청
 bool ClientSession::RecvRequest()
 {
-	// 이 변수들은 쓰이는데가 있나?
 	DWORD dw_flags = 0;
 	DWORD dw_number_of_byte_recvd = 0;
 
@@ -122,6 +115,16 @@ bool ClientSession::SendRequest(uint32_t data_size, char* data)
 // ACCEPT 요청
 bool ClientSession::AcceptRequest(SOCKET listen_socket)
 {
+	if (client_socket_ == INVALID_SOCKET) {
+		client_socket_ = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_IP, NULL, 0, WSA_FLAG_OVERLAPPED);
+		if (client_socket_ == INVALID_SOCKET) {
+			ErrorHandling("WSASocket() Error!", WSAGetLastError());
+			return false;
+		}
+	}
+	
+	ZeroMemory(&accept_overlapped_ex_, sizeof(OverlappedEx));
+
 	accept_overlapped_ex_.wsa_buf.len = 0;
 	accept_overlapped_ex_.wsa_buf.buf = NULL;
 	accept_overlapped_ex_.operation = IOOperation::ACCEPT;
@@ -140,7 +143,6 @@ bool ClientSession::AcceptRequest(SOCKET listen_socket)
 			return false;
 		}
 	}
-	std::cout << "AcceptRequest() Success!" << std::endl;
 
 	is_connected_ = true;
 
@@ -190,7 +192,16 @@ void ClientSession::SendComplete()
 void ClientSession::AcceptComplete(HANDLE iocp_handle)
 {
 	BindClientToIOCP(iocp_handle);
+	
+	SOCKADDR_IN stClientAddr;
+	int nAddrLen = sizeof(SOCKADDR_IN);
+	char clientIP[32] = { 0, };
+	inet_ntop(AF_INET, &(stClientAddr.sin_addr), clientIP, 32 - 1);
+	std::cout << "********Connection Request*********\n";
+	std::cout << "Client from IP [" << clientIP << "] Allocated SOCKET [" << (int)client_socket_ << "]\n";
+
 	// RECV 요청
 	RecvRequest();
+
 }
 
