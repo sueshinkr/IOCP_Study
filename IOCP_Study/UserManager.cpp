@@ -59,7 +59,6 @@ void UserManager::AddUser(std::string user_id, uint32_t user_index)
 
 void UserManager::DelUser(User* user)
 {
-	printf("DelUser\n");
 	user_id_index_map_.erase(user->GetUserId());
 	user->UserLogout();
 

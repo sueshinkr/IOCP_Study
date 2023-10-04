@@ -4,7 +4,7 @@ bool RedisManager::StartRedisProcessor(std::string ip_, uint16_t port_, int16_t 
 {
 	if (Connect(ip_, port_) == false)
 	{
-		printf("Redis 立加 角菩\n");
+		std::cout << "Redis 立加 角菩\n";
 		return false;
 	}
 
